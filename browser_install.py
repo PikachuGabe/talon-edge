@@ -8,7 +8,7 @@ def install_browser(selected_browser):
         "Librewolf": "Librewolf.Librewolf"
     }
     if selected_browser == "Edge":
-        break;
+        return
     if selected_browser not in browser_map:
         print(f"Unknown browser selected: {selected_browser}")
         return
