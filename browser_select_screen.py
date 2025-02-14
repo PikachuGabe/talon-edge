@@ -80,6 +80,7 @@ class BrowserSelectScreen(QWidget):
             "Brave": QColor(255, 255, 255),
             "Firefox": QColor(34, 139, 34),
             "Librewolf": QColor(255, 255, 255),
+            "Edge": QColor(255, 255, 255),
         }
         self.selected_browser = None
         button_layout = QHBoxLayout()
