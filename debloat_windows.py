@@ -70,51 +70,54 @@ def apply_registry_changes():
         log(f"Error applying registry changes: {e}")
 
 def run_edge_vanisher():
-    log("Starting Edge Vanisher script execution...")
-    try:
-        script_url = "https://raw.githubusercontent.com/ravendevteam/talon-blockedge/refs/heads/main/edge_vanisher.ps1"
-        temp_dir = tempfile.gettempdir()
-        script_path = os.path.join(temp_dir, "edge_vanisher.ps1")
-        log(f"Attempting to download Edge Vanisher script from: {script_url}")
-        log(f"Target script path: {script_path}")
-        
-        response = requests.get(script_url)
-        log(f"Download response status code: {response.status_code}")
-        
-        with open(script_path, "wb") as file:
-            file.write(response.content)
-        log("Edge Vanisher script successfully saved to disk")
-        
-        powershell_command = (
-            f"Set-ExecutionPolicy Bypass -Scope Process -Force; "
-            f"& '{script_path}'; exit" 
-        )
-        log(f"Executing PowerShell command: {powershell_command}")
-        
-        process = subprocess.run(
-            ["powershell", "-Command", powershell_command],
-            capture_output=True,
-            text=True
-        )
-        
-        if process.returncode == 0:
-            log("Edge Vanisher execution completed successfully")
-            log(f"Process output: {process.stdout}")
+    if selected_browser == "Edge":
+        run_oouninstall()
+    else:
+        log("Starting Edge Vanisher script execution...")
+        try:
+            script_url = "https://raw.githubusercontent.com/ravendevteam/talon-blockedge/refs/heads/main/edge_vanisher.ps1"
+            temp_dir = tempfile.gettempdir()
+            script_path = os.path.join(temp_dir, "edge_vanisher.ps1")
+            log(f"Attempting to download Edge Vanisher script from: {script_url}")
+            log(f"Target script path: {script_path}")
+
+            response = requests.get(script_url)
+            log(f"Download response status code: {response.status_code}")
+
+            with open(script_path, "wb") as file:
+                file.write(response.content)
+            log("Edge Vanisher script successfully saved to disk")
+
+            powershell_command = (
+                f"Set-ExecutionPolicy Bypass -Scope Process -Force; "
+                f"& '{script_path}'; exit" 
+            )
+            log(f"Executing PowerShell command: {powershell_command}")
+
+            process = subprocess.run(
+                ["powershell", "-Command", powershell_command],
+                capture_output=True,
+                text=True
+            )
+
+            if process.returncode == 0:
+                log("Edge Vanisher execution completed successfully")
+                log(f"Process output: {process.stdout}")
+                run_oouninstall()
+            else:
+                log(f"Edge Vanisher execution failed with return code: {process.returncode}")
+                log(f"Process error: {process.stderr}")
+                run_oouninstall()
+
+        except requests.exceptions.RequestException as e:
+            log(f"Network error during Edge Vanisher script download: {str(e)}")
             run_oouninstall()
-        else:
-            log(f"Edge Vanisher execution failed with return code: {process.returncode}")
-            log(f"Process error: {process.stderr}")
+        except IOError as e:
+            log(f"File I/O error while saving Edge Vanisher script: {str(e)}")
             run_oouninstall()
-            
-    except requests.exceptions.RequestException as e:
-        log(f"Network error during Edge Vanisher script download: {str(e)}")
-        run_oouninstall()
-    except IOError as e:
-        log(f"File I/O error while saving Edge Vanisher script: {str(e)}")
-        run_oouninstall()
-    except Exception as e:
-        log(f"Unexpected error during Edge Vanisher execution: {str(e)}")
-        run_oouninstall()
+        except Exception as e:
+            log(f"Unexpected error during Edge Vanisher execution: {str(e)}")
+            run_oouninstall()
 
 def run_oouninstall():
     log("Starting Office Online uninstallation process...")
